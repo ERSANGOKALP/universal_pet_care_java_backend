@@ -14,6 +14,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Entity
@@ -47,9 +48,14 @@ public class Appointment {
     @JoinColumn(name = "sender")
     @ManyToOne(fetch = FetchType.LAZY)
     private User patient;
+
     @JoinColumn(name = "recipient")
     @ManyToOne(fetch = FetchType.LAZY)
     private User veterinarian;
+
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
+    List<Pet> pets = new ArrayList<>();
+
 
     public void addPatient(User sender){
         this.setPatient(sender);
