@@ -1,12 +1,14 @@
 package com.ersandev.universalpetcare.service.appointment;
 
+import com.ersandev.universalpetcare.dto.AppointmentDto;
+import com.ersandev.universalpetcare.dto.EntityConverter;
+import com.ersandev.universalpetcare.dto.PetDto;
 import com.ersandev.universalpetcare.enums.AppointmentStatus;
 import com.ersandev.universalpetcare.exception.ResourceNotFoundException;
 import com.ersandev.universalpetcare.model.Appointment;
 import com.ersandev.universalpetcare.model.Pet;
 import com.ersandev.universalpetcare.model.User;
 import com.ersandev.universalpetcare.repository.AppointmentRepository;
-import com.ersandev.universalpetcare.repository.PetRepository;
 import com.ersandev.universalpetcare.repository.UserRepository;
 import com.ersandev.universalpetcare.request.AppointmentUpdateRequest;
 import com.ersandev.universalpetcare.request.BookAppointmentRequest;
@@ -29,6 +31,8 @@ public class AppointmentService implements IAppointmentService{
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final IPetService petService;
+    private final EntityConverter<Appointment,AppointmentDto> entityConverter;
+    private final EntityConverter<Pet, PetDto> petEntityConverter;
 
     @Transactional
     @Override
@@ -87,4 +91,19 @@ public class AppointmentService implements IAppointmentService{
     public Appointment getAppointmentByNo(String appointmentNo) {
         return appointmentRepository.findByAppointmentNo(appointmentNo);
     }
+
+    @Override
+    public List<AppointmentDto> getUserAppointments(Long userId){
+        List<Appointment> appointments = appointmentRepository.findAllByUserId(userId);
+        return appointments.stream()
+                .map(appointment -> {
+                    AppointmentDto appointmentDto = entityConverter.mapEntityToDto(appointment,AppointmentDto.class);
+                    List<PetDto> petDto = appointment.getPets()
+                            .stream()
+                            .map(pet -> petEntityConverter.mapEntityToDto(pet, PetDto.class)).toList();
+                    appointmentDto.setPets(petDto);
+                    return appointmentDto;
+                }).toList();
+    }
+
 }

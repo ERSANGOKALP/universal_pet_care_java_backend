@@ -1,5 +1,6 @@
 package com.ersandev.universalpetcare.service.appointment;
 
+import com.ersandev.universalpetcare.dto.AppointmentDto;
 import com.ersandev.universalpetcare.model.Appointment;
 import com.ersandev.universalpetcare.request.AppointmentUpdateRequest;
 import com.ersandev.universalpetcare.request.BookAppointmentRequest;
@@ -13,4 +14,6 @@ public interface IAppointmentService {
     void deleteAppointment(Long id);
     Appointment getAppointmentById(Long id);
     Appointment getAppointmentByNo(String appointmentNo);
+
+    List<AppointmentDto> getUserAppointments(Long userId);
 }
